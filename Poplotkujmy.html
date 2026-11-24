@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+
+
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poplotkujmy 💬</title>
+
+
+  <style>
+    :root {
+      --purple: #8b55f6;
+      --pink: #ff65b4;
+      --ink: #292238;
+      --muted: #81758e;
+      --line: #eadcf4;
+      --page: #fff5fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .topbar {
+      height: 78px;
+      padding: 0 7%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      color: var(--purple);
+      font-size: 29px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav button {
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .hero {
+      padding: 64px 20px 38px;
+      text-align: center;
+      background: linear-gradient(110deg, #ffdef0, #e9dcff);
+    }
+
+    .hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 0 auto 28px;
+      color: #655a7d;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .primary {
+      border: 0;
+      border-radius: 30px;
+      padding: 15px 29px;
+      background: var(--purple);
+      color: white;
+      font-weight: 700;
+    }
+
+    .primary.pink { background: var(--pink); }
+    .primary:hover { filter: brightness(.96); }
+
+    .layout {
+      width: min(1100px, 92%);
+      margin: 38px auto;
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(260px, .8fr);
+      gap: 26px;
+      align-items: start;
+    }
+
+    .panel, .post-card {
+      padding: 24px;
+      background: white;
+      border-radius: 22px;
+      box-shadow: 0 5px 24px #5b28510b;
+    }
+
+    .panel { margin-bottom: 24px; }
+    .panel h2 { margin: 0 0 20px; font-size: 23px; }
+
+    textarea, input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 14px 16px;
+      background: white;
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .composer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .composer-bottom select { width: auto; max-width: 60%; }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .tag {
+      border: 0;
+      border-radius: 25px;
+      padding: 10px 14px;
+      background: #f3e8ff;
+      color: #8250d8;
+    }
+
+    .tag.active { background: var(--purple); color: white; }
+
+    .post-card { margin-bottom: 22px; }
+    .post-head { display: flex; gap: 13px; align-items: center; }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: #f3e8ff;
+      font-size: 25px;
+    }
+
+    .post-author { font-weight: 700; }
+    .post-date { margin-top: 4px; color: var(--muted); font-size: 14px; }
+    .post-category {
+      display: inline-block;
+      margin: 15px 0 5px;
+      padding: 7px 12px;
+      border-radius: 20px;
+      background: #f3e8ff;
+      color: #8250d8;
+      font-size: 13px;
+    }
+
+    .post-text {
+      margin: 12px 0 18px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .post-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid #f2e7f1;
+      padding-bottom: 14px;
+    }
+
+    .soft-button {
+      border: 0;
+      border-radius: 20px;
+      padding: 9px 13px;
+      background: #f8eff7;
+      color: #6b4e70;
+    }
+
+    .danger { color: #a52852; }
+
+    .comments { padding-top: 14px; }
+    .comment {
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 12px;
+      background: #fff7fb;
+    }
+
+    .comment p {
+      margin: 6px 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .comment-form {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .comment-form textarea { min-height: 44px; }
+    .comment-form button { flex-shrink: 0; }
+
+    .side-card { margin-bottom: 24px; }
+    .side-card h2 { margin-bottom: 20px; }
+    .topic-row {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0e5f0;
+    }
+
+    .topic-row:last-child { border-bottom: 0; }
+    .topic-row strong { display: block; margin-bottom: 5px; }
+    .topic-row span { color: var(--muted); font-size: 14px; }
+
+    .auth-wrap {
+      width: min(450px, 92%);
+      margin: 55px auto;
+    }
+
+    .auth-wrap .panel { padding: 30px; }
+    .auth-wrap label { display: block; margin: 12px 0 6px; }
+    .auth-wrap button { margin-top: 10px; }
+    .auth-wrap .primary { width: 100%; }
+    .auth-message { min-height: 20px; color: #8a3269; line-height: 1.4; }
+    .muted { color: var(--muted); font-size: 14px; }
+
+    @media (max-width: 760px) {
+      .topbar { height: auto; padding: 18px 5%; flex-wrap: wrap; }
+      .nav { gap: 14px; }
+      .hero { padding: 48px 18px 34px; }
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { order: -1; }
+      .panel, .post-card { padding: 18px; }
+    }
+
+    @media (max-width: 440px) {
+      .brand { font-size: 24px; }
+      .composer-bottom { align-items: stretch; flex-direction: column; }
+      .composer-bottom select { width: 100%; max-width: none; }
+      .comment-form { flex-direction: column; }
+      .comment-form button { align-self: flex-end; }
+    }
+  </style>
+
+
+</head>
+
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="#">Poplotkujmy 💬</a>
+    <nav class="nav">
+      <button id="navPosts" type="button">Ploteczki</button>
+      <button id="navTopics" type="button">Tematy</button>
+      <button id="logoutBtn" class="hidden" type="button">Wyloguj</button>
+    </nav>
+  </header>
+
+
+  <!-- Widok przed zalogowaniem -->
+
+
+  <main id="authView" class="auth-wrap">
+    <section class="panel">
+      <h2>Witaj w Poplotkujmy 💬</h2>
+      <p class="muted">Zaloguj się lub załóż konto, aby dołączyć do rozmów.</p>
+
+
+<label for="email">Adres e-mail</label>
+<input id="email" type="email" autocomplete="email" placeholder="twoj@email.pl">
+
+<label for="password">Hasło</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="Hasło">
+
+<button id="loginBtn" class="primary" type="button">Zaloguj się</button>
+<button id="registerBtn" class="soft-button" type="button">Załóż konto</button>
+<button id="resetBtn" class="soft-button" type="button">Nie pamiętasz hasła?</button>
+<p id="authMessage" class="auth-message" aria-live="polite"></p>
+</section>
+
+  </main>
+
+
+  <!-- Widok po zalogowaniu -->
+
+
+  <div id="appView" class="hidden">
+    <section class="hero">
+      <h1>Masz coś do powiedzenia? 💗</h1>
+      <p>Ploteczki, przemyślenia i codzienne historie.<br>Wszystko w jednym miejscu!</p>
+      <button id="heroAddBtn" class="primary" type="button">Dodaj ploteczkę ✨</button>
+    </section>
+
+
+<main class="layout">
+<section>
+<div class="panel" id="composer">
+<h2>Co u Ciebie słychać? ☁️</h2>
+<textarea id="postText" maxlength="2000" placeholder="Napisz, co Ci chodzi po głowie..."></textarea>
+
+<div class="composer-bottom">
+<select id="postCategory" aria-label="Kategoria wpisu">
+<option value="codzienność">🌸 Codzienność</option>
+<option value="szkoła">📚 Szkoła</option>
+<option value="przyjaźń">🫶 Przyjaźń</option>
+<option value="miłość">💗 Miłość</option>
+<option value="inne">✨ Inne</option>
+</select>
+<button id="publishBtn" class="primary pink" type="button">Opublikuj 💌</button>
+</div>
+<p id="postMessage" class="auth-message" aria-live="polite"></p>
+</div>
+
+<div id="feed">
+<p class="muted">Wczytywanie ploteczek...</p>
+</div>
+</section>
+
+<aside class="sidebar" id="topics">
+<section class="panel side-card">
+<h2>Popularne tematy 🔥</h2>
+<div class="tag-list">
+<button class="tag" data-topic="szkoła">#szkoła</button>
+<button class="tag" data-topic="przyjaźń">#przyjaźń</button>
+<button class="tag" data-topic="miłość">#miłość</button>
+<button class="tag" data-topic="codzienność">#codzienność</button>
+<button class="tag" data-topic="all">Wszystkie</button>
+</div>
+</section>
+
+<section class="panel side-card">
+<h2>Co jest na topie? ✨</h2>
+<div class="topic-row">
+<strong>#szkoła</strong>
+<span>Codzienne szkolne historie</span>
+</div>
+<div class="topic-row">
+<strong>#przyjaźń</strong>
+<span>O relacjach i przyjaźni</span>
+</div>
+<div class="topic-row">
+<strong>#miłość</strong>
+<span>Serduszka i motylki</span>
+</div>
+</section>
+</aside>
+</main>
+
+  </div>
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      deleteDoc,
+      doc,
+      onSnapshot,
+      query,
+      orderBy,
+      serverTimestamp,
+      updateDoc,
+      arrayUnion,
+      arrayRemove
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    // Wklej tutaj konfigurację ze swojego projektu Firebase.
+    const firebaseConfig = {
+  apiKey: "AIzaSyAliIiInRapqcZzz05I12SjXJKQ4TVggfo",
+  authDomain: "poplotkujmy-812cd.firebaseapp.com",
+  projectId: "poplotkujmy-812cd",
+  storageBucket: "poplotkujmy-812cd.firebasestorage.app",
+  messagingSenderId: "888174280353",
+  appId: "1:888174280353:web:54d107f94adb05680a3ae0",
+  measurementId: "G-TYYHJF40HD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const authView = document.getElementById("authView");
+    const appView = document.getElementById("appView");
+    const feed = document.getElementById("feed");
+
+    let currentUser = null;
+    let stopPostsListener = null;
+    let activeTopic = "all";
+
+    const categoryNames = {
+      "codzienność": "🌸 Codzienność",
+      "szkoła": "📚 Szkoła",
+      "przyjaźń": "🫶 Przyjaźń",
+      "miłość": "💗 Miłość",
+      "inne": "✨ Inne"
+    };
+
+    function message(id, text) {
+      document.getElementById(id).textContent = text;
+    }
+
+    function makeButton(text, className = "soft-button") {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = className;
+      button.textContent = text;
+      return button;
+    }
+
+    function requireLogin() {
+      if (!currentUser) {
+        alert("Zaloguj się, aby skorzystać z tej funkcji.");
+        return false;
+      }
+      return true;
+    }
+
+    function friendlyDate(timestamp) {
+      if (!timestamp || typeof timestamp.toDate !== "function") return "przed chwilą";
+      return timestamp.toDate().toLocaleString("pl-PL", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    // Rejestracja
+    document.getElementById("registerBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        message("authMessage", "Wpisz adres e-mail i hasło.");
+        return;
+      }
+
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        message("authMessage", "Konto zostało utworzone.");
+      } catch (error) {
+        message("authMessage", "Nie udało się utworzyć konta. Sprawdź dane i spróbuj ponownie.");
+        console.error(error);
+      }
+    });
+
+    // Logowanie
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        message("authMessage", "Wpisz adres e-mail i hasło.");
+        return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        message("authMessage", "");
+      } catch (error) {
+        message("authMessage", "Nie udało się zalogować. Sprawdź e-mail i hasło.");
+        console.error(error);
+      }
+    });
+
+    // Odzyskiwanie hasła
+    document.getElementById("resetBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+
+      if (!email) {
+        message("authMessage", "Najpierw wpisz swój adres e-mail.");
+        return;
+      }
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        message("authMessage", "Jeśli konto istnieje, otrzymasz wiadomość z linkiem do zmiany hasła.");
+      } catch (error) {
+        message("authMessage", "Nie udało się wysłać wiadomości. Sprawdź adres e-mail.");
+        console.error(error);
+      }
+    });
+
+    // Wylogowanie
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        alert("Nie udało się wylogować.");
+        console.error(error);
+      }
+    });
+
+    // Po zalogowaniu pokaż stronę główną
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+      authView.classList.toggle("hidden", Boolean(user));
+      appView.classList.toggle("hidden", !user);
+      document.getElementById("logoutBtn").classList.toggle("hidden", !user);
+
+      if (stopPostsListener) {
+        stopPostsListener();
+        stopPostsListener = null;
+      }
+
+      if (user) {
+        startPostsListener();
+      } else {
+        feed.replaceChildren();
+      }
+    });
+
+    // Publikowanie wpisu
+    document.getElementById("publishBtn").addEventListener("click", async () => {
+      if (!requireLogin()) return;
+
+      const text = document.getElementById("postText").value.trim();
+      const category = document.getElementById("postCategory").value;
+
+      if (!text) {
+        message("postMessage", "Wpis nie może być pusty.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "posts"), {
+          text,
+          category,
+          author: currentUser.uid,
+          createdAt: serverTimestamp(),
+          likes: []
+        });
+
+        document.getElementById("postText").value = "";
+        message("postMessage", "Ploteczka została opublikowana!");
+      } catch (error) {
+        message("postMessage", "Nie udało się opublikować wpisu.");
+        console.error(error);
+      }
+    });
+
+    document.getElementById("heroAddBtn").addEventListener("click", () => {
+      document.getElementById("composer").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("postText").focus();
+    });
+
+    document.getElementById("navPosts").addEventListener("click", () => {
+      document.getElementById("feed").scrollIntoView({ behavior: "smooth" });
+    });
+
+    document.getElementById("navTopics").addEventListener("click", () => {
+      document.getElementById("topics").scrollIntoView({ behavior: "smooth" });
+    });
+
+    // Filtrowanie po temacie
+    document.querySelectorAll("[data-topic]").forEach(button => {
+      button.addEventListener("click", () => {
+        activeTopic = button.dataset.topic;
+        document.querySelectorAll("[data-topic]").forEach(item => {
+          item.classList.toggle("active", item.dataset.topic === activeTopic);
+        });
+        startPostsListener();
+      });
+    });
+
+    function startPostsListener() {
+      if (stopPostsListener) stopPostsListener();
+
+      const postsQuery = query(
+        collection(db, "posts"),
+        orderBy("createdAt", "desc")
+      );
+
+      stopPostsListener = onSnapshot(postsQuery, snapshot => {
+        feed.replaceChildren();
+
+        const posts = snapshot.docs.map(item => ({
+          id: item.id,
+          ...item.data()
+        }));
+
+        const filteredPosts = activeTopic === "all"
+          ? posts
+          : posts.filter(post => post.category === activeTopic);
+
+        if (filteredPosts.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "muted";
+          empty.textContent = activeTopic === "all"
+            ? "Nie ma jeszcze ploteczek. Dodaj pierwszą!"
+            : "Nie ma jeszcze wpisów w tym temacie.";
+          feed.appendChild(empty);
+          return;
+        }
+
+        filteredPosts.forEach(post => feed.appendChild(createPost(post)));
+      }, error => {
+        feed.textContent = "Nie udało się wczytać wpisów.";
+        console.error(error);
+      });
+    }
+
+    function createPost(post) {
+      const article = document.createElement("article");
+      article.className = "post-card";
+
+      const head = document.createElement("div");
+      head.className = "post-head";
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = "💗";
+
+      const authorInfo = document.createElement("div");
+
+      const author = document.createElement("div");
+      author.className = "post-author";
+      author.textContent = "Anonimowa ploteczka";
+
+      const date = document.createElement("div");
+      date.className = "post-date";
+      date.textContent = friendlyDate(post.createdAt);
+
+      authorInfo.append(author, date);
+      head.append(avatar, authorInfo);
+
+      const category = document.createElement("span");
+      category.className = "post-category";
+      category.textContent = "# " + (post.category || "inne");
+
+      const text = document.createElement("p");
+      text.className = "post-text";
+      text.textContent = post.text || "";
+
+      const actions = document.createElement("div");
+      actions.className = "post-actions";
+
+      const likes = Array.isArray(post.likes) ? post.likes : [];
+      const liked = Boolean(currentUser && likes.includes(currentUser.uid));
+
+      const likeButton = makeButton(
+        `${liked ? "💗" : "🤍"} Polub (${likes.length})`
+      );
+
+      likeButton.addEventListener("click", async () => {
+        if (!requireLogin()) return;
+
+        const postRef = doc(db, "posts", post.id);
+        try {
+          await updateDoc(postRef, {
+            likes: liked
+              ? arrayRemove(currentUser.uid)
+              : arrayUnion(currentUser.uid)
+          });
+        } catch (error) {
+          alert("Nie udało się zaktualizować polubienia.");
+          console.error(error);
+        }
+      });
+
+      actions.appendChild(likeButton);
+
+      if (currentUser && currentUser.uid === post.author) {
+        const deletePostButton = makeButton("Usuń wpis", "soft-button danger");
+        deletePostButton.addEventListener("click", async () => {
+          if (!confirm("Czy na pewno usunąć ten wpis?")) return;
+
+          try {
+            await deleteDoc(doc(db, "posts", post.id));
+          } catch (error) {
+            alert("Nie udało się usunąć wpisu.");
+            console.error(error);
+          }
+        });
+        actions.appendChild(deletePostButton);
+      }
+
+      const comments = document.createElement("section");
+      comments.className = "comments";
+
+      const commentsTitle = document.createElement("strong");
+      commentsTitle.textContent = "Komentarze";
+      comments.appendChild(commentsTitle);
+
+      const commentsList = document.createElement("div");
+      comments.appendChild(commentsList);
+
+      if (currentUser) {
+        const form = document.createElement("form");
+        form.className = "comment-form";
+
+        const input = document.createElement("textarea");
+        input.maxLength = 500;
+        input.rows = 2;
+        input.placeholder = "Dodaj komentarz...";
+
+        const submit = makeButton("Wyślij", "primary pink");
+        submit.type = "submit";
+
+        form.append(input, submit);
+        form.addEventListener("submit", async event => {
+          event.preventDefault();
+
+          const commentText = input.value.trim();
+          if (!commentText || !requireLogin()) return;
+
+          try {
+            await addDoc(collection(db, "posts", post.id, "comments"), {
+              text: commentText,
+              author: currentUser.uid,
+              createdAt: serverTimestamp()
+            });
+            input.value = "";
+          } catch (error) {
+            alert("Nie udało się dodać komentarza.");
+            console.error(error);
+          }
+        });
+
+        comments.appendChild(form);
+      } else {
+        const hint = document.createElement("p");
+        hint.className = "muted";
+        hint.textContent = "Zaloguj się, aby komentować.";
+        comments.appendChild(hint);
+      }
+
+      article.append(head, category, text, actions, comments);
+
+      const commentsQuery = query(
+        collection(db, "posts", post.id, "comments"),
+        orderBy("createdAt", "asc")
+      );
+
+      onSnapshot(commentsQuery, snapshot => {
+        commentsList.replaceChildren();
+
+        if (snapshot.empty) {
+          const none = document.createElement("p");
+          none.className = "muted";
+          none.textContent = "Brak komentarzy.";
+          commentsList.appendChild(none);
+          return;
+        }
+
+        snapshot.forEach(commentDoc => {
+          const comment = { id: commentDoc.id, ...commentDoc.data() };
+
+          const box = document.createElement("div");
+          box.className = "comment";
+
+          const commentText = document.createElement("p");
+          commentText.textContent = comment.text || "";
+
+          const commentDate = document.createElement("span");
+          commentDate.className = "muted";
+          commentDate.textContent = "Użytkownik · " + friendlyDate(comment.createdAt);
+
+          box.append(commentText, commentDate);
+
+          if (currentUser && currentUser.uid === comment.author) {
+            const remove = makeButton("Usuń komentarz", "soft-button danger");
+            remove.addEventListener("click", async () => {
+              if (!confirm("Usunąć ten komentarz?")) return;
+
+              try {
+                await deleteDoc(
+                  doc(db, "posts", post.id, "comments", comment.id)
+                );
+              } catch (error) {
+                alert("Nie udało się usunąć komentarza.");
+                console.error(error);
+              }
+            });
+            box.appendChild(remove);
+          }
+
+          commentsList.appendChild(box);
+        });
+      }, error => {
+        commentsList.textContent = "Nie udało się wczytać komentarzy.";
+        console.error(error);
+      });
+
+      return article;
+    }
+  </script>
+
+
+</body>
+</html>
